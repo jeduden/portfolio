@@ -134,6 +134,8 @@ $(document).ready(function() {
         var clickedCoordinates = $(this).data("coord");
         
         if( astar == null ) {
+            // Initialize AStar with manhattan distance and 
+            // visualize the open and close set.
             astar = new AStar(map,manhattanDistance,function () 
             {
                 var astar = this;
@@ -158,7 +160,8 @@ $(document).ready(function() {
             });            
             
             astar.start = clickedCoordinates;
-            
+
+            // Reset all classes that are used to display the state of a-star
             $(".start",mapElement).removeClass("start");
             $(".goal",mapElement).removeClass("goal");
             $(".path",mapElement).removeClass("path");
