@@ -1,0 +1,94 @@
+
+.maptile.obstacle, #legend .obstacle .block
+{
+    background-color:#000000;   
+}
+
+.maptile.empty
+{
+    background-color:#cccccc;
+}
+
+.maptile
+{
+    padding:0px;
+    border: 1px solid white;   
+    text-align:center;
+    vertical-align:middle;
+    height:32px;
+}
+
+.maptile > div
+{
+    width:32px;   
+    font-size:9px;
+}
+
+.maptile.openset, #legend .openset
+{
+    color: blue;   
+    font-weight:bold;
+}
+.maptile.closedset, #legend .closedset
+{
+    color: black;
+}
+
+#map
+{
+    width:480px;   
+    height:480px;
+}
+
+#map>table
+{
+    border: 1px solid black;       
+    border-collapse:collapse;
+}
+
+.maptile.empty.start, #legend .start .block
+{
+    background-color: #00FF00;    
+}
+
+.maptile.empty.goal, #legend .goal .block
+{
+    background-color: #FF0000;
+}
+
+.maptile.empty.path, #legend .path .block
+{
+    background-color: #00DDDD;
+}
+
+#legend .block
+{
+    display:inline-block;
+    width:32px;
+    height:32px;
+}
+
+#legend
+{
+    position:absolute;
+    left:700px;
+    width:200px;
+}
+
+#legend dt
+{
+    clear:right;
+    float:left;   
+    width:32px;
+}
+
+#legend dd
+{    
+    float:right;  
+    width:160px;
+    margin-left:0px;
+    min-height:40px;
+}
+
+
+

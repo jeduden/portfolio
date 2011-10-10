@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Jan-Eric Duden's Code-Portfolio</title>
+    <link href="style.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+<h1>Portofolio</h1>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" type="text/javascript"></script>
+
+<h2>A-Star</h2>
+
+<div>
+    <p>
+    This code demonstrates the A-star path finding algorithm.
+    </p>
+    <p>
+    It displays a map with random obstacles.    
+    A click on an empty tile on the map sets the start point.
+    A second click on an empty tile determines the end point of the path.
+    </p>
+    <p>
+    The A-Star implementation is written in client-side JavaScript 
+    with a heap as priority queue. The implementation is not optimized for speed.
+    </p>
+    <div id="legend">
+        Legend:
+        <dl>
+            <dt class="openset">g/h</dt>
+            <dd>node in open set with the current path cost g (from start to node) and
+            estimated path cost (h) to the goal.</dd>
+            
+            <dt class="closedset">g/h</dt>
+            <dd>node in the closed set with the current path cost g (from start to node) and
+            estimated path cost (h) to the goal.</dd>
+            
+            <dt class="start"><span class="block"></span></dt>
+            <dd>Start</dd>
+            
+            <dt class="goal"><span class="block"></span></dt>
+            <dd>Goal</dd>
+            
+            <dt class="path"><span class="block"></span></dt>
+            <dd>Shortest Path</dd>
+            
+            <dt class="obstacle"><span class="block"></span></dt>
+            <dd>Obstacle</dd>        
+        </dl>
+    </div>
+</div>
+<script src="map.js" type="text/javascript"></script>
+<script src="tile.js" type="text/javascript"></script>
+<script src="priorityqueue.js" type="text/javascript"></script>
+<script src="astar.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+/*
+    Creates an square map in div with id "map".
+    Map tiles will be tagged with the the class "maptile".
+    Map tiles that are obstacles will also get the class "obstacle".
+    Empty tiles get the class "empty".
+    Map tiles that are part of the path that a-star calculated
+    get in addition class "path".
+    The map tile that is the start title gets the class "start". 
+    The goal tile the "goal" class.
+    All map are linked with their corresponding dom-element to easliy update the
+    dom elements if the map view changes.
+*/
+    var map = new Map();
+    
+    map.size(20,20,function(x,y) {
+        var tile = new Tile();
+        if( Math.random() < 0.2 )
+            tile.type(tile.obstacleType);
+        return tile;
+    });
+     
+    // create dom from map
+    $("#map").append(function() {    
+        var tableElement = $("<table></table>");
+        
+        for(var y=0; y<map.tiles.length; y++) {
+            var rowOfTiles = map.tiles[y];
+            var rowElement = $("<tr></tr>");
+            
+            tableElement.append(rowElement);
+            
+            for(var x=0; x<rowOfTiles.length; x++ ) {
+                var tile = rowOfTiles[x];
+                var cellElement = $(document.createElement("td"));
+                
+                cellElement.addClass("maptile").data("coord",{x:x,y:y});
+                
+                //tool tip with coordinates of cell
+                cellElement.attr("title",x.toFixed()+","+y.toFixed());
+                
+                tile.domElement = cellElement;
+                
+                rowElement.append(cellElement);
+                
+                cellElement.append($(document.createElement("div")));
+                
+                if( tile.type() === tile.obstacleType ) {
+                    cellElement.addClass("obstacle");
+                }
+                else {
+                    cellElement.addClass("empty");
+                }
+            }
+        }
+        return tableElement;
+    });
+    
+    
+    /** 
+     * Computes the manhattan distance between the coordinates.
+     */
+    function manhattanDistance(fromCoord,toCoord) {  
+        return Math.abs(fromCoord.x-toCoord.x)+Math.abs(fromCoord.y-toCoord.y);
+    };
+
+    var astar = null;    
+    
+    $(".maptile.empty").click(function(){
+        
+        var clickedCoordinates = $(this).data("coord");
+        
+        if( astar == null ) {
+            astar = new AStar(map,manhattanDistance,function () 
+            {
+                var astar = this;
+                
+                $(".openset").removeClass("openset");
+                
+                $(".maptile.empty").each(function() {
+                    var coord = $(this).data("coord");
+                    
+                    var node = astar.tryGetNode(coord);
+                    if( node !== undefined && node !== null )
+                    {
+                        if( node.closed )
+                            $(this).addClass("closedset");
+                        else
+                            $(this).addClass("openset");
+                        
+                        $(this).empty();
+                        $(this).html("<div>"+node.g.toFixed()+"/"+node.h.toFixed() +"</div>");
+                    }            
+                });
+            });            
+            
+            astar.start = clickedCoordinates;
+            
+            $(".start").removeClass("start");
+            $(".goal").removeClass("goal");
+            $(".path").removeClass("path");
+            $(".openset").removeClass("openset");
+            $(".closedset").removeClass("closedset");
+            $(".maptile.empty").html("<div></div>");            
+            $(this).addClass("start");
+        }
+        else {            
+            astar.goal = clickedCoordinates;
+            
+            $(this).addClass("goal");
+            
+            var pathNodes = astar.searchPath();
+            //add path class to all nodes betwen start and goal
+            for(var i = 1; i<pathNodes.length-1; i++) {
+                map.tiles[pathNodes[i].y][pathNodes[i].x].domElement.addClass("path");
+            }
+            
+            astar = null;
+        }
+    });
+});
+</script>
+
+<div id="map">
+</div>
+
+</body>
+</html>
