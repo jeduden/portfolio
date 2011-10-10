@@ -136,8 +136,7 @@ $(document).ready(function() {
         if( astar == null ) {
             // Initialize AStar with manhattan distance and 
             // visualize the open and close set.
-            astar = new AStar(map,manhattanDistance,function () 
-            {
+            astar = new AStar(map,manhattanDistance,function () {
                 var astar = this;
                 
                 $("#map .openset",mapElement).removeClass("openset");

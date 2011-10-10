@@ -1,3 +1,8 @@
+/** 
+ * Creates object to perform astar search on the specified map
+ * using the given distanceFunc.
+ * onIteration is called for each not that is removed from the queue.
+ */
 function AStar(inputMap,distanceFunc,onIteration) {
     this.inputMap = inputMap;
     this.onIteration = onIteration;
@@ -158,10 +163,18 @@ AStar.prototype.getNode = function(coord) {
  * on the shortest path. The array is empty if no path can be found.
  */
 AStar.prototype.searchPath = function () {
+    
+    //compare two coordinate objects for equality
+    function coordsEqual(a,b) {
+        return a.x == b.x && a.y == b.y;
+    }
+    
     var _this = this;
     var queue = new PriorityQueue(function (aCoord,bCoord) {
         return _this.getNode(aCoord).getF() < _this.getNode(bCoord).getF();   
     });
+    
+    
     
     var startNode = this.getNode(this.start);
     startNode.g = 0;
@@ -173,7 +186,7 @@ AStar.prototype.searchPath = function () {
     while( !queue.empty() ) {
         var currentCoord = queue.extractMin();
         
-        if( currentCoord.x == this.goal.x && currentCoord.y == this.goal.y ) {
+        if( coordsEqual(currentCoord, this.goal) ) {
             return this.reconstructPath(currentCoord);   
         }
         
@@ -191,11 +204,13 @@ AStar.prototype.searchPath = function () {
             
             if( oldG !== undefined ) {
                 if( oldG > neighbourNode.g )
-                {                    
-                    queue.heapifyUp( queue.find( neighbour.coord , 
-                        function (a,b) {
-                            return a.x == b.x && a.y == b.y;
-                        }) );
+                {      
+                    //found a better way need to update heap
+                    //because we changed already the g value of the node
+                    //the node's f value will be less thus 
+                    //we call heapifyUp to fix the heap
+                    queue.heapifyUp( 
+                        queue.find( neighbour.coord , coordsEqual));
                 }
                 //this node is already in the open list
                 //with a better or equal g.
