@@ -127,6 +127,8 @@ $(document).ready(function() {
 
     var astar = null;    
     
+    var mapElement = $("#map");
+    
     $(".maptile.empty").click(function(){
         
         var clickedCoordinates = $(this).data("coord");
@@ -136,9 +138,9 @@ $(document).ready(function() {
             {
                 var astar = this;
                 
-                $(".openset").removeClass("openset");
+                $("#map .openset",mapElement).removeClass("openset");
                 
-                $(".maptile.empty").each(function() {
+                $(".maptile.empty",mapElement).each(function() {
                     var coord = $(this).data("coord");
                     
                     var node = astar.tryGetNode(coord);
@@ -157,12 +159,12 @@ $(document).ready(function() {
             
             astar.start = clickedCoordinates;
             
-            $(".start").removeClass("start");
-            $(".goal").removeClass("goal");
-            $(".path").removeClass("path");
-            $(".openset").removeClass("openset");
-            $(".closedset").removeClass("closedset");
-            $(".maptile.empty").html("<div></div>");            
+            $(".start",mapElement).removeClass("start");
+            $(".goal",mapElement).removeClass("goal");
+            $(".path",mapElement).removeClass("path");
+            $(".openset",mapElement).removeClass("openset");
+            $(".closedset",mapElement).removeClass("closedset");
+            $(".maptile.empty",mapElement).html("<div></div>");            
             $(this).addClass("start");
         }
         else {            
